@@ -180,6 +180,27 @@ The backend includes the following dependencies:
 - ✅ Custom hooks (useApi, useDebounce)
 - ✅ API proxy configuration for seamless development
 
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and deployment.
+
+### Available Workflows
+
+- **CI** - Runs on every push/PR (lint, build, test)
+- **Frontend CI** - Dedicated workflow for frontend changes
+- **Backend CI** - Dedicated workflow for backend changes
+- **Deploy** - Production deployment workflow
+- **Dependency Review** - Security vulnerability scanning
+- **CodeQL** - Advanced security analysis
+
+See [`.github/workflows/README.md`](.github/workflows/README.md) for detailed documentation.
+
+### Workflow Status
+
+After pushing to GitHub, you can view workflow runs in the **Actions** tab of your repository.
+
 ## License
+
+ISC
 
 

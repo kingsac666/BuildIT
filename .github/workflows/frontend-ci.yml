@@ -1,0 +1,79 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop, 'feature/*', 'bugfix/*']
+    paths:
+      - 'packages/frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'packages/frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
+jobs:
+  lint-and-build:
+    name: Lint and Build
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: packages/frontend
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: packages/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: packages/frontend
+
+      - name: Run ESLint
+        run: npm run lint
+        continue-on-error: false
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build-${{ matrix.node-version }}
+          path: packages/frontend/dist
+          retention-days: 7
+
+  # Optional: Add tests when you have them
+  # test:
+  #   name: Run Tests
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: packages/frontend
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20.x'
+  #         cache: 'npm'
+  #         cache-dependency-path: packages/frontend/package-lock.json
+  #     - name: Install dependencies
+  #       run: npm ci
+  #     - name: Run tests
+  #       run: npm test
+

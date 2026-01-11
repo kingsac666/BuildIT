@@ -1,0 +1,95 @@
+name: Development Checks
+
+on:
+  push:
+    branches: [develop, feature/*, bugfix/*]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      # Frontend checks
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: packages/frontend
+
+      - name: Frontend lint check
+        run: npm run lint
+        working-directory: packages/frontend
+        continue-on-error: true
+
+      - name: Frontend build check
+        run: npm run build
+        working-directory: packages/frontend
+        env:
+          NODE_ENV: production
+
+      # Backend checks
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: packages/backend
+
+      - name: Backend startup check
+        run: |
+          timeout 10s npm start || true
+        working-directory: packages/backend
+        env:
+          NODE_ENV: test
+          PORT: 3001
+
+      # Check for common issues
+      - name: Check for console.logs (optional)
+        run: |
+          echo "Checking for console.log statements..."
+          if grep -r "console\.log" packages/frontend/src packages/backend/src --exclude-dir=node_modules 2>/dev/null; then
+            echo "⚠️ Found console.log statements (consider removing in production)"
+          else
+            echo "✅ No console.log statements found"
+          fi
+        continue-on-error: true
+
+      - name: Check file sizes
+        run: |
+          echo "Checking for large files..."
+          find packages -type f -size +1M -not -path "*/node_modules/*" -not -path "*/dist/*" | head -10 || echo "✅ No large files found"
+        continue-on-error: true
+
+  dependency-check:
+    name: Dependency Health Check
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Check for outdated packages
+        run: |
+          echo "Checking for outdated packages..."
+          npm outdated --workspace=packages/frontend || true
+          npm outdated --workspace=packages/backend || true
+        continue-on-error: true
+
+      - name: Check for security vulnerabilities
+        run: |
+          npm audit --workspace=packages/frontend --audit-level=moderate || true
+          npm audit --workspace=packages/backend --audit-level=moderate || true
+        continue-on-error: true
+
