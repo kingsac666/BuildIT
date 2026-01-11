@@ -1,0 +1,31 @@
+/**
+ * Application constants
+ */
+
+export const API_ENDPOINTS = {
+  HEALTH: '/health',
+  EXAMPLES: '/examples',
+};
+
+export const ROUTES = {
+  HOME: '/',
+  ABOUT: '/about',
+  CONTACT: '/contact',
+};
+
+export const STORAGE_KEYS = {
+  TOKEN: 'token',
+  USER: 'user',
+  THEME: 'theme',
+};
+
+export const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  SERVER_ERROR: 500,
+};
+
