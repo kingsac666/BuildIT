@@ -9,17 +9,35 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Check Discord webhook secret
+        run: |
+          if [ -z "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            echo "❌ DISCORD_WEBHOOK_URL secret is not set!"
+            echo ""
+            echo "📝 How to set it up:"
+            echo "1. Go to your GitHub repository"
+            echo "2. Navigate to: Settings → Secrets and variables → Actions"
+            echo "3. Click 'New repository secret'"
+            echo "4. Name: DISCORD_WEBHOOK_URL (exactly as shown)"
+            echo "5. Value: Paste your Discord webhook URL"
+            echo "6. Click 'Add secret'"
+            echo ""
+            echo "🔗 To get your Discord webhook URL:"
+            echo "1. Open your Discord server"
+            echo "2. Server Settings → Integrations → Webhooks"
+            echo "3. Create a new webhook or copy existing one"
+            exit 1
+          else
+            echo "✅ Discord webhook secret found!"
+            echo "Testing webhook connection..."
+          fi
+
       - name: Test Discord webhook
+        if: secrets.DISCORD_WEBHOOK_URL != ''
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          if [ -z "$WEBHOOK_URL" ]; then
-            echo "❌ DISCORD_WEBHOOK_URL secret is not set!"
-            echo "Please add it in: Settings → Secrets and variables → Actions"
-            exit 1
-          fi
-          
-          echo "Testing Discord webhook..."
+          echo "Sending test notification to Discord..."
           
           PAYLOAD=$(cat <<EOF
           {
