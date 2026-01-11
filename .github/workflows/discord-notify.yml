@@ -29,4 +29,112 @@ jobs:
             echo "status=success" >> "$GITHUB_OUTPUT"
             echo "emoji=✅" >> "$GITHUB_OUTPUT"
             echo "color=3066993" >> "$GITHUB_OUTPUT"
-          elif [ "$CONCLUSION" = "failure" ] || [ "$C]()
+          elif [ "$CONCLUSION" = "failure" ] || [ "$CONCLUSION" = "cancelled" ]; then
+            echo "status=failure" >> "$GITHUB_OUTPUT"
+            echo "emoji=❌" >> "$GITHUB_OUTPUT"
+            echo "color=15158332" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=$CONCLUSION" >> "$GITHUB_OUTPUT"
+            echo "emoji=⚠️" >> "$GITHUB_OUTPUT"
+            echo "color=16776960" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Prepare Discord payload
+        id: payload
+        run: |
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          STATUS="${{ steps.workflow-status.outputs.status }}"
+          EMOJI="${{ steps.workflow-status.outputs.emoji }}"
+          COLOR="${{ steps.workflow-status.outputs.color }}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          COMMIT_MSG="${{ github.event.workflow_run.head_commit.message }}"
+          AUTHOR="${{ github.event.workflow_run.head_commit.author.name }}"
+          WORKFLOW_URL="${{ github.event.workflow_run.html_url }}"
+          REPO="${{ github.repository }}"
+          TIMESTAMP="${{ github.event.workflow_run.updated_at }}"
+
+          escape_json() {
+            echo "$1" | sed 's/\\/\\\\/g' \
+                        | sed 's/"/\\"/g' \
+                        | sed ':a;N;$!ba;s/\n/\\n/g' \
+                        | sed 's/\r/\\r/g' \
+                        | sed 's/\t/\\t/g'
+          }
+
+          COMMIT_MSG_ESCAPED=$(escape_json "$COMMIT_MSG")
+          WORKFLOW_NAME_ESCAPED=$(escape_json "$WORKFLOW_NAME")
+          AUTHOR_ESCAPED=$(escape_json "$AUTHOR")
+          BRANCH_ESCAPED=$(escape_json "$BRANCH")
+          REPO_ESCAPED=$(escape_json "$REPO")
+
+          cat > payload.json <<EOF
+{
+  "username": "GitHub Actions",
+  "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+  "embeds": [
+    {
+      "title": "${WORKFLOW_NAME_ESCAPED} - ${STATUS}",
+      "description": "**Repository:** ${REPO_ESCAPED}\\n**Branch:** ${BRANCH_ESCAPED}\\n**Status:** ${EMOJI} ${STATUS}\\n**Commit:** ${COMMIT_MSG_ESCAPED}\\n**Author:** ${AUTHOR_ESCAPED}",
+      "color": ${COLOR},
+      "timestamp": "${TIMESTAMP}",
+      "url": "${WORKFLOW_URL}",
+      "footer": {
+        "text": "GitHub Actions"
+      }
+    }
+  ]
+}
+EOF
+
+          echo "payload_file=payload.json" >> "$GITHUB_OUTPUT"
+          echo "Payload written to payload.json"
+
+      - name: Check Discord webhook secret
+        id: check-secret
+        run: |
+          if [ -z "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            echo "secret_exists=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "secret_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Debug workflow info
+        run: |
+          echo "Workflow: ${{ github.event.workflow_run.name }}"
+          echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}"
+          echo "Payload file: ${{ steps.payload.outputs.payload_file }}"
+          echo "Secret exists: ${{ steps.check-secret.outputs.secret_exists }}"
+
+      - name: Send Discord notification
+        if: steps.check-secret.outputs.secret_exists == 'true'
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          PAYLOAD_FILE="${{ steps.payload.outputs.payload_file }}"
+
+          if [ -z "$PAYLOAD_FILE" ] || [ ! -f "$PAYLOAD_FILE" ]; then
+            echo "Payload file not found"
+            ls -la
+            exit 1
+          fi
+
+          echo "Payload size: $(wc -c < "$PAYLOAD_FILE") bytes"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d @"$PAYLOAD_FILE" \
+            "$WEBHOOK_URL")
+
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "HTTP Status Code: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" -eq 204 ] || [ "$HTTP_CODE" -eq 200 ]; then
+            echo "Discord notification sent successfully"
+          else
+            echo "Failed to send Discord notification"
+            echo "$BODY"
+            exit 1
+          fi
