@@ -129,15 +129,8 @@ jobs:
           echo "=== Sending Discord Notification ==="
           echo "Webhook URL (first 50 chars): ${WEBHOOK_URL:0:50}..."
           
-          # Get the payload from previous step safely using a heredoc
-          # (prevents the shell from mis-parsing quotes/newlines inside JSON)
-          PAYLOAD=$(cat <<'PAYLOAD_EOF'
-${{ steps.payload.outputs.payload }}
-PAYLOAD_EOF
-)
-
-          # Show a short payload preview for debugging (first 200 chars)
-          echo "Payload preview: ${PAYLOAD:0:200}"
+          # Get the payload from previous step
+          PAYLOAD="${{ steps.payload.outputs.payload }}"
           
           # Validate payload
           if [ -z "$PAYLOAD" ]; then
