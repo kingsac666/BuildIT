@@ -25,10 +25,14 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: packages/frontend/package-lock.json
+          # Use the repo root lockfile for caching when using npm workspaces
+          # (this repo currently has a single root package-lock.json)
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (root workspace)
+        # Run at repository root so npm uses the root package-lock.json for workspaces
         run: npm ci
+        working-directory: .
 
       - name: Build application
         run: npm run build
@@ -77,10 +81,13 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: packages/backend/package-lock.json
+          # Use the repo root lockfile for caching when using npm workspaces
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (root workspace, prod)
+        # Install all workspace deps at repo root, then backend will use installed packages
         run: npm ci --omit=dev
+        working-directory: .
 
       # Example: Deploy to Railway
       # - name: Deploy to Railway
