@@ -2,7 +2,7 @@ name: Discord Notifications
 
 on:
   workflow_run:
-    workflows: ["CI", "Frontend CI", "Backend CI"]
+    workflows: ["CI", "Frontend CI", "Backend CI", "Development Checks"]
     types:
       - completed
   workflow_dispatch:
@@ -16,47 +16,98 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get workflow status
         id: workflow-status
         run: |
-          if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+          CONCLUSION="${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow conclusion: $CONCLUSION"
+          
+          if [ "$CONCLUSION" == "success" ]; then
             echo "status=success" >> $GITHUB_OUTPUT
             echo "emoji=✅" >> $GITHUB_OUTPUT
             echo "color=3066993" >> $GITHUB_OUTPUT
-          else
+          elif [ "$CONCLUSION" == "failure" ] || [ "$CONCLUSION" == "cancelled" ]; then
             echo "status=failure" >> $GITHUB_OUTPUT
             echo "emoji=❌" >> $GITHUB_OUTPUT
             echo "color=15158332" >> $GITHUB_OUTPUT
+          else
+            echo "status=$CONCLUSION" >> $GITHUB_OUTPUT
+            echo "emoji=⚠️" >> $GITHUB_OUTPUT
+            echo "color=16776960" >> $GITHUB_OUTPUT
           fi
 
-      - name: Send Discord notification
-        uses: sarisia/actions-status-discord@v1
-        if: always()
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          title: "${{ github.event.workflow_run.name }} - ${{ steps.workflow-status.outputs.status }}"
-          description: |
-            **Workflow:** ${{ github.event.workflow_run.name }}
-            **Status:** ${{ steps.workflow-status.outputs.emoji }} ${{ steps.workflow-status.outputs.status }}
-            **Branch:** ${{ github.event.workflow_run.head_branch }}
-            **Commit:** ${{ github.event.workflow_run.head_commit.message }}
-            **Author:** ${{ github.event.workflow_run.head_commit.author.name }}
-          color: ${{ steps.workflow-status.outputs.color }}
-          username: GitHub Actions
-          avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+      - name: Prepare Discord payload
+        id: payload
+        run: |
+          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          STATUS="${{ steps.workflow-status.outputs.status }}"
+          EMOJI="${{ steps.workflow-status.outputs.emoji }}"
+          COLOR="${{ steps.workflow-status.outputs.color }}"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          COMMIT_MSG="${{ github.event.workflow_run.head_commit.message }}"
+          AUTHOR="${{ github.event.workflow_run.head_commit.author.name }}"
+          WORKFLOW_URL="${{ github.event.workflow_run.html_url }}"
+          REPO="${{ github.repository }}"
+          
+          # Escape JSON special characters
+          COMMIT_MSG_ESCAPED=$(echo "$COMMIT_MSG" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
+          
+          PAYLOAD=$(cat <<EOF
+          {
+            "username": "GitHub Actions",
+            "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+            "embeds": [{
+              "title": "${WORKFLOW_NAME} - ${STATUS}",
+              "description": "**Repository:** ${REPO}\n**Branch:** ${BRANCH}\n**Status:** ${EMOJI} ${STATUS}\n**Commit:** ${COMMIT_MSG_ESCAPED}\n**Author:** ${AUTHOR}",
+              "color": ${COLOR},
+              "timestamp": "${{ github.event.workflow_run.updated_at }}",
+              "url": "${WORKFLOW_URL}",
+              "footer": {
+                "text": "GitHub Actions"
+              }
+            }]
+          }
+          EOF
+          )
+          
+          echo "payload<<EOF" >> $GITHUB_OUTPUT
+          echo "$PAYLOAD" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-      # Alternative: Simple webhook using curl (if the action above doesn't work)
-      # - name: Send Discord webhook
-      #   run: |
-      #     curl -H "Content-Type: application/json" \
-      #          -d '{
-      #            "embeds": [{
-      #              "title": "${{ github.event.workflow_run.name }} - ${{ steps.workflow-status.outputs.status }}",
-      #              "description": "**Branch:** ${{ github.event.workflow_run.head_branch }\n**Status:** ${{ steps.workflow-status.outputs.emoji }} ${{ steps.workflow-status.outputs.status }}",
-      #              "color": ${{ steps.workflow-status.outputs.color }},
-      #              "timestamp": "${{ github.event.workflow_run.updated_at }}"
-      #            }]
-      #          }' \
-      #          ${{ secrets.DISCORD_WEBHOOK_URL }}
+      - name: Send Discord notification
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "❌ DISCORD_WEBHOOK_URL secret is not set!"
+            exit 1
+          fi
+          
+          echo "Sending notification to Discord..."
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d "${{ steps.payload.outputs.payload }}" \
+            "$WEBHOOK_URL")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          if [ "$HTTP_CODE" -eq 204 ] || [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Successfully sent notification to Discord (HTTP $HTTP_CODE)"
+          else
+            echo "❌ Failed to send notification (HTTP $HTTP_CODE)"
+            echo "Response: $BODY"
+            exit 1
+          fi
+
+      - name: Debug info (if notification fails)
+        if: failure()
+        run: |
+          echo "Workflow Name: ${{ github.event.workflow_run.name }}"
+          echo "Workflow Conclusion: ${{ github.event.workflow_run.conclusion }}"
+          echo "Branch: ${{ github.event.workflow_run.head_branch }}"
+          echo "Webhook URL set: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}"
 

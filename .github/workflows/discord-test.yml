@@ -1,0 +1,60 @@
+name: Test Discord Notification
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-notification:
+    name: Test Discord Webhook
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Test Discord webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "❌ DISCORD_WEBHOOK_URL secret is not set!"
+            echo "Please add it in: Settings → Secrets and variables → Actions"
+            exit 1
+          fi
+          
+          echo "Testing Discord webhook..."
+          
+          PAYLOAD=$(cat <<EOF
+          {
+            "username": "GitHub Actions Test",
+            "embeds": [{
+              "title": "🧪 Test Notification",
+              "description": "This is a test notification from GitHub Actions.\n\nIf you see this message, your Discord webhook is configured correctly!",
+              "color": 3066993,
+              "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "footer": {
+                "text": "GitHub Actions - Test"
+              }
+            }]
+          }
+          EOF
+          )
+          
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "$WEBHOOK_URL")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          if [ "$HTTP_CODE" -eq 204 ] || [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Test notification sent successfully! (HTTP $HTTP_CODE)"
+            echo "Check your Discord channel for the test message."
+          else
+            echo "❌ Failed to send test notification (HTTP $HTTP_CODE)"
+            echo "Response: $BODY"
+            echo ""
+            echo "Troubleshooting:"
+            echo "1. Verify the webhook URL is correct"
+            echo "2. Check that the webhook is enabled in Discord"
+            echo "3. Ensure the webhook channel exists and the bot has permissions"
+            exit 1
+          fi

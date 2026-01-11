@@ -73,16 +73,56 @@ If the GitHub Action doesn't work, uncomment the curl-based webhook in the workf
 
 ## Testing
 
+### Method 1: Test Workflow (Recommended)
+1. Go to your GitHub repository → **Actions** tab
+2. Find **"Test Discord Notification"** workflow
+3. Click **Run workflow** → **Run workflow**
+4. Check your Discord channel - you should see a test message
+
+### Method 2: Trigger via Push
 1. Make a small change and push to trigger a workflow
 2. Wait for the workflow to complete
 3. Check your Discord channel for the notification
 
+### Method 3: Manual Workflow Run
+1. Go to **Actions** → **Discord Notifications**
+2. Click **Run workflow** → Select branch → **Run workflow**
+3. Check your Discord channel
+
 ## Troubleshooting
 
 ### No notifications appearing
-- Check that the webhook URL is correct in GitHub secrets
-- Verify the webhook is enabled in Discord
-- Check workflow run logs in GitHub Actions tab
+
+1. **Test the webhook first:**
+   - Go to Actions → "Test Discord Notification" → Run workflow
+   - This will verify your webhook is configured correctly
+
+2. **Check GitHub Secrets:**
+   - Go to Settings → Secrets and variables → Actions
+   - Verify `DISCORD_WEBHOOK_URL` exists and is correct
+   - The secret name must be exactly: `DISCORD_WEBHOOK_URL`
+
+3. **Verify workflow is running:**
+   - Go to Actions tab
+   - Check if "Discord Notifications" workflow appears
+   - Click on it to see if it's running/failing
+
+4. **Check workflow logs:**
+   - Open a failed workflow run
+   - Check the "Send Discord notification" step logs
+   - Look for error messages
+
+5. **Verify Discord webhook:**
+   - Go to Discord → Server Settings → Integrations → Webhooks
+   - Ensure the webhook is enabled
+   - Check that the channel still exists
+   - Try copying the webhook URL again
+
+6. **Common issues:**
+   - Webhook URL might have extra spaces (copy again)
+   - Webhook might be disabled in Discord
+   - Channel might have been deleted
+   - Bot permissions might be insufficient
 
 ### Wrong channel
 - Update the webhook channel in Discord server settings
