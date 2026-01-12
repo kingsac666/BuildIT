@@ -1,6 +1,0 @@
-name: "DISABLED - Test Discord Notification"
-
-# Disabled: The test workflow has been removed in favor of updating `discord-notify.yml` to support both Discord and server notifications.
-on: []
-
-# If you need a manual test later, re-enable this file or use `workflow_run` notifications for the CI workflow.
