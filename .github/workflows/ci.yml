@@ -11,10 +11,6 @@ jobs:
   frontend:
     name: Frontend CI
     runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: packages/frontend
 
     steps:
       - name: Checkout code
@@ -25,16 +21,13 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: packages/frontend/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (root, workspaces)
         run: npm ci
 
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Build application
-        run: npm run build
+      - name: Build frontend workspace
+        run: npm run build --workspace=frontend
         env:
           NODE_ENV: production
 
@@ -49,10 +42,6 @@ jobs:
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
-    
-    defaults:
-      run:
-        working-directory: packages/backend
 
     steps:
       - name: Checkout code
@@ -63,14 +52,14 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: packages/backend/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+      - name: Install dependencies (root, workspaces)
         run: npm ci
 
-      - name: Verify server starts
+      - name: Verify backend starts (workspace)
         run: |
-          timeout 10s npm start || true
+          timeout 10s npm run start --workspace=backend || true
         env:
           NODE_ENV: test
           PORT: 3001

@@ -1,18 +1,8 @@
-name: Backend CI
+name: "DISABLED - Backend CI (duplicate)"
 
-on:
-  push:
-    branches: [main, develop, 'feature/*', 'bugfix/*']
-    paths:
-      - 'packages/backend/**'
-      - '.github/workflows/backend-ci.yml'
-      - 'package-lock.json'
-  pull_request:
-    branches: [main, develop]
-    paths:
-      - 'packages/backend/**'
-      - '.github/workflows/backend-ci.yml'
-      - 'package-lock.json'
+# Disabled: this workflow was a duplicate of `ci.yml`.
+# Keeping the file but disabling triggers so it won't run unintentionally.
+on: []
 
 jobs:
   lint-and-test:

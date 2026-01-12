@@ -11,18 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check Discord webhook secret
+      - name: Check notification secrets
         id: check-secret
         run: |
           if [ -z "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
-            echo "secret_exists=false" >> "$GITHUB_OUTPUT"
+            echo "discord_secret_exists=false" >> "$GITHUB_OUTPUT"
           else
-            echo "secret_exists=true" >> "$GITHUB_OUTPUT"
+            echo "discord_secret_exists=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build Discord payload
+          if [ -z "${{ secrets.SERVER_NOTIFICATION_URL }}" ]; then
+            echo "server_secret_exists=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "server_secret_exists=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build notification payload
         id: payload
-        if: steps.check-secret.outputs.secret_exists == 'true'
+        # Build payload if either Discord or server notifications are configured
+        if: steps.check-secret.outputs.discord_secret_exists == 'true' || steps.check-secret.outputs.server_secret_exists == 'true'
         run: |
           STATUS="${{ github.event.workflow_run.conclusion }}"
           WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
@@ -60,16 +67,27 @@ jobs:
           echo "Created payload.json ($(wc -c < payload.json) bytes)"
 
       - name: Send notification to Discord
-        if: steps.check-secret.outputs.secret_exists == 'true'
+        if: steps.check-secret.outputs.discord_secret_exists == 'true'
         run: |
           curl -X POST \
             -H "Content-Type: application/json" \
             --data @"${{ steps.payload.outputs.payload_file }}" \
             "${{ secrets.DISCORD_WEBHOOK_URL }}"
 
+      - name: Send notification to server
+        if: steps.check-secret.outputs.server_secret_exists == 'true'
+        run: |
+          echo "Sending notification to server..."
+          SERVER_URL="${{ secrets.SERVER_NOTIFICATION_URL }}"
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            --data @"${{ steps.payload.outputs.payload_file }}" \
+            "$SERVER_URL"
+
       - name: Debug workflow info
         run: |
           echo "Workflow: ${{ github.event.workflow_run.name }}"
           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
           echo "Branch: ${{ github.event.workflow_run.head_branch }}"
-          echo "Secret exists: ${{ steps.check-secret.outputs.secret_exists }}"
+          echo "Discord secret exists: ${{ steps.check-secret.outputs.discord_secret_exists }}"
+          echo "Server secret exists: ${{ steps.check-secret.outputs.server_secret_exists }}"

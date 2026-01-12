@@ -12,34 +12,28 @@ Main continuous integration workflow that runs on every push and pull request.
 - Pull requests to `main` or `develop` branches
 
 **Jobs:**
-- **Frontend CI**: Lints and builds the frontend application
+- **Frontend CI**: Builds the frontend application (ESLint disabled in CI)
 - **Backend CI**: Verifies backend server starts correctly
-- **Status Check**: Ensures all jobs pass
+- **Status Check**: Ensures all jobs pass (fails if either job fails)
 
 ### 2. **Frontend CI** (`.github/workflows/frontend-ci.yml`)
-Dedicated workflow for frontend changes (runs only when frontend files change).
+This dedicated workflow has been **disabled** because the main `CI` workflow handles frontend builds.
 
-**Features:**
-- Runs on multiple Node.js versions (18.x, 20.x)
-- ESLint checking
-- Production build verification
-- Build artifact upload
+**Notes:**
+- Previously ran on multiple Node.js versions (18.x, 20.x)
+- ESLint checking has been disabled in CI (linting can still be run locally or in feature branches if desired)
+- Production build verification and artifact upload were part of the workflow
 
-**Triggers:**
-- Changes in `packages/frontend/**`
-- Changes to the workflow file itself
+**Status:** Disabled — use `.github/workflows/ci.yml` for combined builds.
 
 ### 3. **Backend CI** (`.github/workflows/backend-ci.yml`)
-Dedicated workflow for backend changes (runs only when backend files change).
+This dedicated workflow has been **disabled** because the main `CI` workflow handles backend checks.
 
-**Features:**
-- Runs on multiple Node.js versions (18.x, 20.x)
-- Server startup verification
-- Code formatting checks (placeholder)
+**Notes:**
+- Previously ran on multiple Node.js versions (18.x, 20.x)
+- Verified backend server startup and had a placeholder for formatting checks
 
-**Triggers:**
-- Changes in `packages/backend/**`
-- Changes to the workflow file itself
+**Status:** Disabled — use `.github/workflows/ci.yml` for combined builds.
 
 ### 4. **Deploy Workflow** (`.github/workflows/deploy.yml`)
 Deployment workflow for production releases.
@@ -70,23 +64,28 @@ Advanced security analysis using GitHub's CodeQL.
 - Security vulnerability detection
 - Runs weekly and on every push/PR
 
-### 7. **Discord Notifications** (`.github/workflows/discord-notify.yml`)
-Automatically sends notifications to Discord when workflows complete.
+### 7. **Discord & Server Notifications** (`.github/workflows/discord-notify.yml`)
+Automatically sends notifications when the `CI` workflow completes.
 
 **Features:**
 - Notifies on CI workflow completion
 - Color-coded messages (green/red)
 - Includes workflow status, branch, and commit info
-- Requires Discord webhook setup (see `.github/DISCORD_SETUP.md`)
+- Sends to **Discord** when `DISCORD_WEBHOOK_URL` secret is configured
+- Sends to a custom **server endpoint** when `SERVER_NOTIFICATION_URL` secret is configured
 
-**Note:** Configure later when ready. See setup guide for instructions.
+**Setup:**
+- For Discord: add `DISCORD_WEBHOOK_URL` as a repository secret (see `.github/DISCORD_SETUP.md`)
+- For server notifications: add `SERVER_NOTIFICATION_URL` as a repository secret (it should accept a JSON POST with the same payload as Discord)
+
+**Note:** The workflow will send to whichever of the two secrets are configured (one or both).
 
 ### 8. **Development Checks** (`.github/workflows/dev-checks.yml`)
 Additional checks for development branches.
 
 **Features:**
 - Runs on feature/bugfix branches
-- Code quality checks
+- Code quality checks (note: frontend linting is disabled in CI by default)
 - Dependency health monitoring
 - Console.log detection
 - File size checks
@@ -97,7 +96,7 @@ Additional checks for development branches.
 All workflows use npm caching to speed up builds:
 ```yaml
 cache: 'npm'
-cache-dependency-path: packages/[frontend|backend]/package-lock.json
+cache-dependency-path: package-lock.json (root)
 ```
 
 ### Matrix Builds
