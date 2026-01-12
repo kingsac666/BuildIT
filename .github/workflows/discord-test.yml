@@ -33,7 +33,7 @@ jobs:
           fi
 
       - name: Test Discord webhook
-        if: secrets.DISCORD_WEBHOOK_URL != ''
+        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
