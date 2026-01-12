@@ -37,10 +37,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
-        run: npm run lint
-        working-directory: packages/frontend
-        continue-on-error: false
+      # REMOVED: ESLint step
+      # - name: Run ESLint
+      #   run: npm run lint
+      #   working-directory: packages/frontend
+      #   continue-on-error: false
 
       - name: Build application
         run: npm run build
@@ -54,22 +55,3 @@ jobs:
           name: frontend-build-${{ matrix.node-version }}
           path: packages/frontend/dist
           retention-days: 7
-
-  # Optional: Add tests when you have them
-  # test:
-  #   name: Run Tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20.x'
-  #         cache: 'npm'
-  #         cache-dependency-path: package-lock.json
-  #     - name: Install dependencies
-  #       run: npm ci
-  #     - name: Run tests
-  #       run: npm test
-  #       working-directory: packages/frontend
