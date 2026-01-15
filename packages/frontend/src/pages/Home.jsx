@@ -1,75 +1,132 @@
-import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { healthService } from '../services/apiService';
-import { Card } from '../components/common';
+import React from 'react';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Card,
+  CardContent,
+  Avatar,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+} from '@mui/material';
+import Hero from '../components/Hero';
 
-/**
- * Home page component
- */
+const posts = [
+  {
+    id: 1,
+    title: 'Introducing BuildIT: A Minimal Monorepo Starter',
+    date: 'Jan 10, 2026',
+    excerpt:
+      'A simple starter that combines Express backend and React frontend with Vite and Tailwind, ready for expansion.',
+  },
+  {
+    id: 2,
+    title: 'Why Monorepos for Small Teams',
+    date: 'Dec 20, 2025',
+    excerpt: 'Monorepos simplify shared code and dependency management while keeping deployments straightforward.',
+  },
+  {
+    id: 3,
+    title: 'Tips for Faster Developer Feedback Loops',
+    date: 'Nov 15, 2025',
+    excerpt: 'Leverage Vite HMR, caching in CI, and workspace tooling to speed up iteration.',
+  },
+];
+
 const Home = () => {
-  const { data: healthStatus, isLoading } = useQuery({
-    queryKey: ['health'],
-    queryFn: () => healthService.checkHealth(),
-  });
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Welcome to BuildIT
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-            Monorepo with Express.js + React + Vite + Tailwind CSS
-          </p>
+    <Box sx={{ minHeight: '100vh', py: 6 }}>
+      <Container maxWidth="lg">
+        {/* Hero */}
+        <Hero />
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Typography variant="h3" component="h1" gutterBottom>
+            BuildIT Blog
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            Simple monorepo starter with a clean blog-style homepage powered by MUI
+          </Typography>
+        </Box>
 
-          {isLoading ? (
-            <Card>
-              <p>Loading...</p>
-            </Card>
-          ) : (
-            healthStatus && (
-              <Card title="Backend Status">
-                <div className="space-y-2">
-                  <p>
-                    <span className="font-semibold">Status:</span>{' '}
-                    <span className="text-green-600">{healthStatus.status}</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold">Message:</span>{' '}
-                    {healthStatus.message}
-                  </p>
-                </div>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Box>
+              {posts.map((post) => (
+                <Card key={post.id} variant="outlined" sx={{ mb: 3 }}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                      <Avatar sx={{ mr: 2 }}>{post.title.charAt(0)}</Avatar>
+                      <Box>
+                        <Typography variant="h6">{post.title}</Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {post.date}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    <Typography variant="body1" paragraph>
+                      {post.excerpt}
+                    </Typography>
+
+                    <Button size="small">Read more</Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Box sx={{ position: 'sticky', top: 80 }}>
+              <Card variant="outlined" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    About
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    BuildIT is a minimal monorepo starter with backend and frontend
+                    examples. Use this space to highlight project goals.
+                  </Typography>
+                </CardContent>
               </Card>
-            )
-          )}
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card title="Tech Stack">
-              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                <li>✅ Express.js Backend</li>
-                <li>✅ React + Vite</li>
-                <li>✅ Tailwind CSS</li>
-                <li>✅ React Router</li>
-                <li>✅ Redux Toolkit</li>
-                <li>✅ TanStack Query</li>
-                <li>✅ Axios</li>
-              </ul>
-            </Card>
+              <Card variant="outlined" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Archives
+                  </Typography>
+                  <List dense>
+                    <ListItem>
+                      <ListItemText primary="January 2026" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="December 2025" />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText primary="November 2025" />
+                    </ListItem>
+                  </List>
+                </CardContent>
+              </Card>
 
-            <Card title="Features">
-              <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                <li>🚀 Hot Module Replacement</li>
-                <li>📦 Monorepo Structure</li>
-                <li>🎨 Tailwind Styling</li>
-                <li>🔄 State Management</li>
-                <li>🌐 API Integration</li>
-              </ul>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+              <Card variant="outlined">
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Social
+                  </Typography>
+                  <Chip label="GitHub" sx={{ mr: 1, mb: 1 }} />
+                  <Chip label="Twitter" sx={{ mr: 1, mb: 1 }} />
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 };
 

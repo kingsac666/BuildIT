@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* Ensure Tailwind's font-sans is applied globally */
+  html, body {
+    @apply font-sans;
+  }
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* Primary UI font */
+  font-family: 'Poppins', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -23,10 +31,21 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  /* Apply About page background globally (Tailwind: bg-gray-50) */
+  background-color: #F9FAFB; /* tailwind gray-50 */
+  color: #111827; /* tailwind gray-900 as default text color */
+  /* Explicit fallback in case some components don't inherit from :root */
+  font-family: 'Poppins', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* Respect Tailwind dark class on the html element */
+html.dark body {
+  background-color: #111827; /* tailwind gray-900 */
+  color: #ffffff;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
-}
+} 
 

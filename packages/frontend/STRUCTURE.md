@@ -82,6 +82,8 @@ Top-level page components that correspond to routes:
 - Each page is a full component representing a route
 - Pages can use components, hooks, and services
 
+**Note:** The default `Home.jsx` has been updated to a blog-style homepage using Material UI (MUI). The MUI theme lives in `src/theme.js` and the app is wrapped with `ThemeProvider` in `src/main.jsx`. If you add additional MUI-based pages, use the existing theme and `CssBaseline` for consistent styling.
+
 ## Hooks (`hooks/`)
 Custom React hooks for reusable logic:
 - `useApi` - React Query hooks for API calls

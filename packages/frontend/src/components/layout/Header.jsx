@@ -19,6 +19,12 @@ const Header = () => {
               Home
             </Link>
             <Link
+              to="/blog"
+              className="text-gray-700 dark:text-gray-300 hover:text-blue-600"
+            >
+              Blog
+            </Link>
+            <Link
               to="/about"
               className="text-gray-700 dark:text-gray-300 hover:text-blue-600"
             >

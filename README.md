@@ -103,6 +103,15 @@ The frontend includes the following dependencies:
 - **TanStack Query (React Query)** - Data fetching and caching (Redis-like behavior)
 - **Axios** - HTTP client for API requests
 
+Additionally, the repository now includes the **MUI (Material UI)** blog template dependencies to provide a blog-style homepage:
+
+- `@mui/material` (7.3.7)
+- `@mui/icons-material` (7.3.7)
+- `@emotion/react` and `@emotion/styled`
+- `markdown-to-jsx`
+
+Run `npm install` at the repository root to install these new dependencies (we use npm workspaces).
+
 ## Frontend Structure
 
 The frontend follows an organized folder structure:

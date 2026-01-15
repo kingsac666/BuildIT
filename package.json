@@ -20,6 +20,13 @@
   ],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "@mui/material": "7.3.7",
+    "@mui/icons-material": "7.3.7",
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "markdown-to-jsx": "^7.1.5"
+  },
   "devDependencies": {
     "concurrently": "^8.2.0"
   }
