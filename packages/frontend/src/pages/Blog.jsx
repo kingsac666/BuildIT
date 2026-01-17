@@ -1,27 +1,45 @@
-import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
-import AppTheme from '../components/AppTheme';
-import AppAppBar from '../components/AppAppBar';
-import MainContent from '../components/MainContent';
-import Latest from '../components/Latest';
-import Footer from '../components/Footer';
-import Hero from '../components/Hero';
+import Seo from '../components/Seo';
 
-export default function Blog(props) {
+const insights = [
+  {
+    title: 'SEO tips for service businesses',
+    description: 'Practical steps to improve rankings and attract qualified leads.',
+  },
+  {
+    title: 'AI automation use cases',
+    description: 'How AI agents reduce response time and improve customer satisfaction.',
+  },
+  {
+    title: 'Digital transformation roadmap',
+    description: 'A simple framework to prioritize the right systems for your business.',
+  },
+];
+
+const Blog = () => {
   return (
-    <AppTheme {...props}>
-      <CssBaseline enableColorScheme />
-      <AppAppBar />
-      <Hero />
-      <Container
-        maxWidth="lg"
-        component="main"
-        sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4 }}
-      >
-        <MainContent />
-        <Latest />
-      </Container>
-      <Footer />
-    </AppTheme>
+    <div className="py-12">
+      <Seo
+        title="Insights | BuildIT"
+        description="Practical insights on SEO, AI automation, and digital transformation."
+      />
+      <div className="container mx-auto px-4">
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="text-4xl font-semibold text-gray-900">Blog & Insights</h1>
+          <p className="mt-4 text-lg text-gray-600">
+            Optional articles to grow your digital presence and automation strategy.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {insights.map((item) => (
+            <div key={item.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
+              <p className="mt-3 text-sm text-gray-600">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default Blog;

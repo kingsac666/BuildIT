@@ -6,11 +6,10 @@ import { Header, Footer } from './';
  */
 const Layout = ({ children }) => {
   return (
-    //  dark:bg-gray-900 
-    <div className="min-h-screen bg-gray-50flex flex-col">
-      {/* <Header /> */}
+    <div className="flex min-h-screen flex-col bg-gray-50 text-gray-900">
+      <Header />
       <main className="flex-grow">{children}</main>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 };
