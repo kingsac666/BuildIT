@@ -8,6 +8,7 @@ import { queryClient } from './config/queryClient';
 import AppRouter from './routes/AppRouter';
 import theme from './theme';
 import './index.css';
+import './scroll-reveal.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

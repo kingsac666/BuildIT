@@ -2,18 +2,20 @@ import Seo from '../components/Seo';
 
 const TermsOfService = () => {
   return (
-    <div className="py-12">
+    <div className="py-12 reveal" data-reveal>
       <Seo
         title="Terms of Service | BuildIT"
         description="Read the terms governing the use of BuildIT services."
       />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl space-y-6">
-          <h1 className="text-4xl font-semibold text-gray-900">Terms of Service</h1>
-          <p className="text-sm text-gray-600">
+          <h1 className="text-4xl font-semibold text-gray-900 reveal" data-reveal>
+            Terms of Service
+          </h1>
+          <p className="text-sm text-gray-600 reveal reveal-delay-100" data-reveal>
             By engaging with BuildIT, you agree to the following terms. Please review them carefully.
           </p>
-          <div className="space-y-4 text-sm text-gray-600">
+          <div className="space-y-4 text-sm text-gray-600 reveal reveal-delay-200" data-reveal>
             <p>
               BuildIT provides digital services including web development, AI automation, marketing, and
               consulting. Specific deliverables are defined in project proposals or agreements.

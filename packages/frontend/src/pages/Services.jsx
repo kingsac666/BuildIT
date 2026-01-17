@@ -44,24 +44,32 @@ const services = [
 ];
 
 const Services = () => {
+  const getRevealDelayClass = (index) => `reveal-delay-${((index % 5) + 1) * 100}`;
+
   return (
-    <div className="py-12">
+    <div className="py-12 reveal" data-reveal>
       <Seo
         title="Our Services | BuildIT Digital Solutions"
         description="Website development, SEO, AI automation, mobile apps, marketing campaigns, dashboards, and custom systems."
       />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-semibold text-gray-900">Our Services</h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <h1 className="text-4xl font-semibold text-gray-900 reveal" data-reveal>
+            Our Services
+          </h1>
+          <p className="mt-4 text-lg text-gray-600 reveal reveal-delay-100" data-reveal>
             From digital strategy to implementation, we provide everything needed to build smart systems and
             grow efficiently.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <div key={service.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          {services.map((service, index) => (
+            <div
+              key={service.title}
+              className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(index)}`}
+              data-reveal
+            >
               <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
               <p className="mt-3 text-sm text-gray-600">{service.description}</p>
             </div>

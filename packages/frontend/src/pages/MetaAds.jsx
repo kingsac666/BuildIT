@@ -1,4 +1,5 @@
 import Seo from '../components/Seo';
+import { getWhatsAppLink } from '../utils/whatsapp';
 
 const metaServices = [
   'Web development',
@@ -8,24 +9,27 @@ const metaServices = [
 ];
 
 const MetaAds = () => {
+  const getRevealDelayClass = (index) => `reveal-delay-${((index % 5) + 1) * 100}`;
+  const whatsappLink = getWhatsAppLink();
+
   return (
-    <div className="py-12">
+    <div className="py-12 reveal" data-reveal>
       <Seo
         title="BuildIT | Free Strategy Call"
         description="Get a free strategy call to build your digital system with web, AI automation, and marketing."
       />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl font-semibold text-gray-900">
+          <h1 className="text-4xl font-semibold text-gray-900 reveal" data-reveal>
             Build Your Digital System
           </h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <p className="mt-4 text-lg text-gray-600 reveal reveal-delay-100" data-reveal>
             Web, AI automation, and marketing solutions tailored to help your business grow efficiently.
           </p>
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <div className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(0)}`} data-reveal>
             <h2 className="text-xl font-semibold text-gray-900">What we deliver</h2>
             <ul className="mt-4 space-y-2 text-sm text-gray-600">
               {metaServices.map((service) => (
@@ -38,7 +42,7 @@ const MetaAds = () => {
             </div>
           </div>
 
-          <form className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          <form className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(1)}`} data-reveal>
             <h2 className="text-xl font-semibold text-gray-900">Get a Free Strategy Call</h2>
             <div className="mt-4 grid gap-4">
               <div>
@@ -84,7 +88,7 @@ const MetaAds = () => {
                 Get a Free Strategy Call
               </button>
               <a
-                href="https://wa.me/212000000000"
+                href={whatsappLink}
                 target="_blank"
                 rel="noreferrer"
                 className="text-center text-sm font-semibold text-blue-600 hover:text-blue-700"

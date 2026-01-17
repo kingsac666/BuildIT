@@ -28,23 +28,31 @@ const projects = [
 ];
 
 const Projects = () => {
+  const getRevealDelayClass = (index) => `reveal-delay-${((index % 5) + 1) * 100}`;
+
   return (
-    <div className="py-12">
+    <div className="py-12 reveal" data-reveal>
       <Seo
         title="Our Projects | BuildIT"
         description="Explore how BuildIT transforms ideas into real digital systems across multiple industries."
       />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-semibold text-gray-900">Our Projects</h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <h1 className="text-4xl font-semibold text-gray-900 reveal" data-reveal>
+            Our Projects
+          </h1>
+          <p className="mt-4 text-lg text-gray-600 reveal reveal-delay-100" data-reveal>
             Real outcomes from businesses that chose BuildIT for digital transformation.
           </p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {projects.map((project) => (
-            <div key={project.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+          {projects.map((project, index) => (
+            <div
+              key={project.title}
+              className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(index)}`}
+              data-reveal
+            >
               <h3 className="text-lg font-semibold text-gray-900">{project.title}</h3>
               <div className="mt-4 space-y-3 text-sm text-gray-600">
                 <p>

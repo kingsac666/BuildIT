@@ -1,12 +1,14 @@
 import { Link, NavLink } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../../assets/BuildIT-noBackground.png';
+import { getWhatsAppLink } from '../../utils/whatsapp';
 
 /**
  * Header/Navbar component
  */
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const whatsappLink = getWhatsAppLink();
 
   const navLinkClasses = ({ isActive }) =>
     `text-sm font-medium transition-colors ${
@@ -35,7 +37,7 @@ const Header = () => {
 
           <div className="hidden items-center gap-3 lg:flex">
             <a
-              href="https://wa.me/212000000000"
+              href={whatsappLink}
               className="text-sm font-medium text-gray-700 hover:text-blue-600"
               target="_blank"
               rel="noreferrer"
@@ -83,7 +85,7 @@ const Header = () => {
 
             <div className="border-t border-gray-200 pt-3">
               <a
-                href="https://wa.me/212000000000"
+                href={whatsappLink}
                 className="text-sm font-medium text-gray-700 hover:text-blue-600"
                 target="_blank"
                 rel="noreferrer"

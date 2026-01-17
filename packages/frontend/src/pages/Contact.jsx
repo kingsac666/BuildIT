@@ -1,21 +1,26 @@
 import Seo from '../components/Seo';
+import { getWhatsAppLink } from '../utils/whatsapp';
 
 const Contact = () => {
+  const whatsappLink = getWhatsAppLink();
+
   return (
-    <div className="py-12">
+    <div className="py-12 reveal" data-reveal>
       <Seo
         title="Contact BuildIT | Start Your Project"
         description="Get in touch with BuildIT to discuss your web, AI, or automation needs."
       />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl">
-          <h1 className="text-4xl font-semibold text-gray-900">Contact BuildIT</h1>
-          <p className="mt-4 text-lg text-gray-600">
+          <h1 className="text-4xl font-semibold text-gray-900 reveal" data-reveal>
+            Contact BuildIT
+          </h1>
+          <p className="mt-4 text-lg text-gray-600 reveal reveal-delay-100" data-reveal>
             Tell us about your project. We respond quickly and can jump on a strategy call.
           </p>
 
           <div className="mt-10 grid gap-8 lg:grid-cols-2">
-            <form className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <form className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal reveal-delay-200" data-reveal>
               <div className="grid gap-4">
                 <div>
                   <label className="text-sm font-medium text-gray-700" htmlFor="name">
@@ -75,13 +80,13 @@ const Contact = () => {
             </form>
 
             <div className="space-y-6">
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal reveal-delay-300" data-reveal>
                 <h2 className="text-lg font-semibold text-gray-900">WhatsApp</h2>
                 <p className="mt-2 text-sm text-gray-600">
                   Chat with us for quick questions or to schedule a call.
                 </p>
                 <a
-                  href="https://wa.me/212000000000"
+                  href={whatsappLink}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-4 inline-flex rounded-full border border-gray-300 px-5 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-100"
@@ -89,7 +94,7 @@ const Contact = () => {
                   Talk to Us on WhatsApp
                 </a>
               </div>
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal reveal-delay-400" data-reveal>
                 <h2 className="text-lg font-semibold text-gray-900">Email</h2>
                 <p className="mt-2 text-sm text-gray-600">hello@buildit.ma</p>
                 <h2 className="mt-6 text-lg font-semibold text-gray-900">Social</h2>

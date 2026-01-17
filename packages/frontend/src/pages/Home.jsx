@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { getWhatsAppLink } from '../utils/whatsapp';
+import TestimonialsCarousel from '../components/TestimonialsCarousel';
 import Seo from '../components/Seo';
 
 const services = [
@@ -48,6 +50,9 @@ const projects = [
 ];
 
 const Home = () => {
+  const getRevealDelayClass = (index) => `reveal-delay-${((index % 5) + 1) * 100}`;
+  const whatsappLink = getWhatsAppLink();
+
   return (
     <div>
       <Seo
@@ -55,7 +60,7 @@ const Home = () => {
         description="BuildIT helps businesses build websites, AI agents, mobile apps, and scalable digital systems to grow efficiently."
       />
 
-      <section className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900 py-20 text-white">
+      <section className="bg-gradient-to-br from-slate-900 via-slate-900 to-blue-900 py-20 text-white reveal" data-reveal>
         <div className="container mx-auto px-4">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-200">
@@ -75,7 +80,7 @@ const Home = () => {
                 Get a Free Consultation
               </Link>
               <a
-                href="https://wa.me/212000000000"
+                href={whatsappLink}
                 className="rounded-full border border-white/70 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10"
                 target="_blank"
                 rel="noreferrer"
@@ -87,17 +92,21 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-16 reveal" data-reveal>
         <div className="container mx-auto px-4">
-          <div className="flex flex-col gap-4 text-center">
+          <div className="flex flex-col gap-4 text-center reveal" data-reveal>
             <h2 className="text-3xl font-semibold text-gray-900">Services overview</h2>
             <p className="text-gray-600">
               Everything you need to modernize your operations and grow with confidence.
             </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <div key={service.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            {services.map((service, index) => (
+              <div
+                key={service.title}
+                className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(index)}`}
+                data-reveal
+              >
                 <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
                 <p className="mt-3 text-sm text-gray-600">{service.description}</p>
               </div>
@@ -106,10 +115,10 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="bg-white py-16">
+      <section className="bg-white py-16 reveal" data-reveal>
         <div className="container mx-auto px-4">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div>
+            <div className="reveal" data-reveal>
               <h2 className="text-3xl font-semibold text-gray-900">Why BuildIT</h2>
               <p className="mt-4 text-gray-600">
                 We are a team of young professionals with hands-on experience delivering impactful digital
@@ -122,7 +131,7 @@ const Home = () => {
                 <li>Automation-first mindset</li>
               </ul>
             </div>
-            <div className="rounded-3xl border border-blue-100 bg-blue-50 p-6">
+            <div className="rounded-3xl border border-blue-100 bg-blue-50 p-6 reveal reveal-delay-200" data-reveal>
               <h3 className="text-lg font-semibold text-blue-900">Clients & industries</h3>
               <p className="mt-3 text-sm text-blue-800">
                 We support retail, hospitality, professional services, e-commerce, and growing startups that
@@ -133,10 +142,10 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="bg-slate-900 py-16 text-white">
+      <section className="bg-slate-900 py-16 text-white reveal" data-reveal>
         <div className="container mx-auto px-4">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-            <div>
+            <div className="reveal" data-reveal>
               <h2 className="text-3xl font-semibold">AI Automation Highlight</h2>
               <p className="mt-4 text-blue-100">
                 Automate customer replies, lead qualification, and support using AI agents on WhatsApp,
@@ -149,7 +158,7 @@ const Home = () => {
                 Automate Your Business
               </Link>
             </div>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-blue-100">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-sm text-blue-100 reveal reveal-delay-200" data-reveal>
               <p>
                 We design AI agents that respond instantly, qualify leads, and escalate complex requests to
                 your team. That means faster response times, happier customers, and more conversions.
@@ -159,9 +168,23 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="bg-white py-16 reveal" data-reveal>
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-4 text-center reveal" data-reveal>
+            <h2 className="text-3xl font-semibold text-gray-900">Client Reviews</h2>
+            <p className="text-gray-600">
+              Real feedback from teams who built with BuildIT.
+            </p>
+          </div>
+          <div className="mt-10 reveal reveal-delay-200" data-reveal>
+            <TestimonialsCarousel />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 reveal" data-reveal>
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between gap-4 reveal" data-reveal>
             <div>
               <h2 className="text-3xl font-semibold text-gray-900">Projects preview</h2>
               <p className="mt-2 text-gray-600">A glimpse at the transformations we deliver.</p>
@@ -171,8 +194,12 @@ const Home = () => {
             </Link>
           </div>
           <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {projects.map((project) => (
-              <div key={project.title} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            {projects.map((project, index) => (
+              <div
+                key={project.title}
+                className={`rounded-2xl border border-gray-200 bg-white p-6 shadow-sm reveal ${getRevealDelayClass(index)}`}
+                data-reveal
+              >
                 <h3 className="text-base font-semibold text-gray-900">{project.title}</h3>
                 <p className="mt-3 text-sm text-gray-600">{project.description}</p>
               </div>
@@ -181,10 +208,10 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="bg-gray-50 py-16">
+      <section className="bg-gray-50 py-16 reveal" data-reveal>
         <div className="container mx-auto px-4">
           <div className="grid gap-8 lg:grid-cols-2">
-            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 reveal" data-reveal>
               <h3 className="text-lg font-semibold text-gray-900">Value proposition (FR)</h3>
               <p className="mt-3 text-sm text-gray-600">
                 BuildIT accompagne les entreprises dans la création de solutions digitales performantes. De
@@ -192,7 +219,7 @@ const Home = () => {
                 transformons vos idées en systèmes efficaces et évolutifs.
               </p>
             </div>
-            <div className="rounded-2xl border border-gray-200 bg-white p-6">
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 reveal reveal-delay-200" data-reveal>
               <h3 className="text-lg font-semibold text-gray-900">Value proposition (Darija)</h3>
               <p className="mt-3 text-sm text-gray-600">
                 BuildIT katkhdem m3a l-businessat bach tbni solutions digitales ذكية. Men sites web moptimizin
@@ -204,11 +231,15 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-16 reveal" data-reveal>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-semibold text-gray-900">Ready to build smarter systems?</h2>
-          <p className="mt-3 text-gray-600">Start your project today and unlock efficient growth.</p>
-          <div className="mt-6 flex flex-wrap justify-center gap-4">
+          <h2 className="text-3xl font-semibold text-gray-900 reveal" data-reveal>
+            Ready to build smarter systems?
+          </h2>
+          <p className="mt-3 text-gray-600 reveal" data-reveal>
+            Start your project today and unlock efficient growth.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-4 reveal reveal-delay-200" data-reveal>
             <Link
               to="/contact"
               className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700"
@@ -216,7 +247,7 @@ const Home = () => {
               Start Your Project
             </Link>
             <a
-              href="https://wa.me/212000000000"
+              href={whatsappLink}
               className="rounded-full border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-900 hover:bg-gray-100"
               target="_blank"
               rel="noreferrer"
